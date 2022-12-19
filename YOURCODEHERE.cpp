@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include <vector>
 #include <iterator>
-
+#include <cmath>
 #include "431project.h"
 
 using namespace std;
@@ -20,7 +20,7 @@ using namespace std;
 /*
  * Enter your PSU IDs here to select the appropriate scanning order.
  */
-#define PSU_ID_SUM (900000800)
+#define PSU_ID_SUM (929765036)
 
 /*
  * Some global variables to track heuristic progress.
@@ -33,25 +33,40 @@ bool currentDimDone = false;
 bool isDSEComplete = false;
 int visit2 = 0;
 std::string prevConfig;
+
+int width[] = {1, 2, 4, 8};
+int l1block[] = {8, 16, 32, 64};
+int dl1sets[] = {32, 64, 128, 256, 512, 1024, 2048, 4096, 8192};
+int dl1assoc[] = {1, 2, 4};
+int il1sets[] = {32, 64, 128, 256, 512, 1024, 2048, 4096, 8192};
+int il1assoc[] = {1, 2, 4};
+int ul2sets[] = {256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072};
+int ul2block[] ={16, 32, 64, 128};
+int ul2assoc[]={1, 2, 4, 8, 16};
+
 /*
  * Given a half-baked configuration containing cache properties, generate
  * latency parameters in configuration string. You will need information about
  * how different cache paramters affect access latency.
  * 
  * Returns a string similar to "1 1 1"
- */
+ */ 
 std::string generateCacheLatencyParams(string halfBackedConfig) {
-
 	string latencySettings;
-	//
-	//YOUR CODE BEGINS HERE
-	//
-	//
-	// Replace this dumb implementation.
-	latencySettings = "1 1 1";
-	//
-	//YOUR CODE ENDS HERE
-	//
+
+	string delimiter = " ";
+	size_t pos = 0;
+	int tokens[NUM_DIMS];
+    
+	int il1_size = getil1size(halfBackedConfig);
+	int il1_latency = log2(il1_size/(1<<10)) + extractConfigParam(halfBackedConfig, 6) - 1;
+	
+	int dl1_size = getdl1size(halfBackedConfig);
+	int dl1_latency = log2(dl1_size/(1<<10)) + extractConfigParam(halfBackedConfig, 4) - 1;
+	
+	int ul2_size = getl2size(halfBackedConfig);;
+	int ul2_latency = log2(ul2_size/(1<<10))+ extractConfigParam(halfBackedConfig, 9) - 5;
+	latencySettings = to_string(dl1_latency) + delimiter +  to_string(il1_latency) + delimiter +  to_string(ul2_latency);
 	return latencySettings;
 }
 
@@ -59,8 +74,38 @@ std::string generateCacheLatencyParams(string halfBackedConfig) {
  * Returns 1 if configuration is valid, else 0
  */
 int validateConfiguration(std::string configuration) {
+	
+	int ifq_size = 1<<(3+extractConfigParam(configuration, 0));
+	if(ifq_size > l1block[extractConfigParam(configuration, 2)]){
+		return 0;
+	}
+	if(ul2block[extractConfigParam(configuration, 8)] < 2*l1block[extractConfigParam(configuration,2)]){
+		return 0;
+	};
+	if(ul2block[extractConfigParam(configuration, 8)] > 128){
+		return 0;
+	};
 
-	// FIXME - YOUR CODE HERE
+	int il1_size = getil1size(configuration);
+	int dl1_size = getdl1size(configuration);
+	int ul2_size = getl2size(configuration);
+
+	if(! (il1_size >= 1<<11 && il1_size <= 1<<16)){
+		return 0;
+	} 
+	if(! (dl1_size >= 1<<11 && dl1_size <= 1<<16)){
+		return 0;
+	} 
+	if(! (ul2_size >= 1<<15 && ul2_size <= 1<<20)){
+		return 0;
+	} 
+	if(! (ul2_size >= 1<<15 && ul2_size <= 1<<20)){
+		return 0;
+	} 
+	if(! (ul2_size >= 2*(il1_size+dl1_size))){
+		return 0;
+	} 
+
 	return isNumDimConfiguration(configuration);
 }
 
