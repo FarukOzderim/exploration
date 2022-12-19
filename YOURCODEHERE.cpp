@@ -186,7 +186,7 @@ std::string generateNextConfigurationProposal(std::string currentconfiguration,
 		nextconfiguration = ss.str();
 		
 		// Make sure we start exploring next dimension in next iteration.
-		if (nextValue == (current_dim_starting_value - (CURRENT_EXPLORATION_DIMENSION_INDEX != 0)) % GLOB_dimensioncardinality[CURRENT_EXPLORATION_DIMENSION]) {
+		if (nextValue == (current_dim_starting_value - 1) % GLOB_dimensioncardinality[CURRENT_EXPLORATION_DIMENSION]) {
 			CURRENT_EXPLORATION_DIMENSION_INDEX++;
 			CURRENT_EXPLORATION_DIMENSION = DIMENSION_EXPLORATION_ORDER[CURRENT_EXPLORATION_DIMENSION_INDEX];
 			current_dim_starting_value = extractConfigParam(nextconfiguration, CURRENT_EXPLORATION_DIMENSION);
