@@ -66,7 +66,7 @@ std::string generateCacheLatencyParams(string halfBackedConfig) {
 	
 	int ul2_size = getl2size(halfBackedConfig);;
 	int ul2_latency = log2(ul2_size/(1<<10))+ extractConfigParam(halfBackedConfig, 9) - 5;
-	latencySettings = to_string(dl1_latency) + delimiter +  to_string(il1_latency) + delimiter +  to_string(ul2_latency);
+	latencySettings = std::to_string(dl1_latency) + delimiter +  std::to_string(il1_latency) + delimiter +  std::to_string(ul2_latency);
 	return latencySettings;
 }
 
