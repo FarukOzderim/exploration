@@ -10,3 +10,8 @@ DSE: 431project.cpp 431project.h 431projectUtils.cpp YOURCODEHERE.cpp
 clean:
 	rm -rf DSE
 
+testclean:
+	rm -rf TEST
+
+test: 431project.h 431projectUtils.cpp test.cpp YOURCODEHERE.cpp YOURCODEHERE.h
+	g++ -g -O3 431projectUtils.cpp test.cpp YOURCODEHERE.cpp -lm -o TEST
