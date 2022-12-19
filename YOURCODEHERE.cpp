@@ -32,7 +32,7 @@ using namespace std;
 //FPU BP Core Cache
 int DIMENSION_EXPLORATION_ORDER[] = {11, 12, 13, 14, 0, 1, 2, 8, 3, 5, 7, 4, 6, 9};
 unsigned int CURRENT_EXPLORATION_DIMENSION_INDEX = 0;
-unsigned int CURRENT_EXPLORATION_DIMENSION = 0;
+unsigned int CURRENT_EXPLORATION_DIMENSION = DIMENSION_EXPLORATION_ORDER[CURRENT_EXPLORATION_DIMENSION_INDEX];
 bool currentDimDone = false;
 bool isDSEComplete = false;
 int visit2 = 0;
